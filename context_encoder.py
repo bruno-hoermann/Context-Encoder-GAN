@@ -183,3 +183,5 @@ for epoch in range(opt.n_epochs):
         batches_done = epoch * len(dataloader) + i
         if batches_done % opt.sample_interval == 0:
             save_sample(batches_done)
+    torch.save(generator.state_dict(), "./weights/gw" + "%d" % epoch + ".pth")
+    torch.save(discriminator.state_dict(), "./weights/dw" + "%d" % epoch + ".pth")
