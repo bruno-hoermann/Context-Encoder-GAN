@@ -92,17 +92,18 @@ celeb_test_ds = CelebADataset("./data", download=True, split='test', transform=t
 
 # Dataset loader
 dataloader = DataLoader(
-    celeb_train_ds,
+    ImageDataset("./data/celeba/%s" % opt.dataset_name, transforms_=transforms_),
     batch_size=opt.batch_size,
     shuffle=True,
     num_workers=opt.n_cpu,
 )
 test_dataloader = DataLoader(
-    celeb_test_ds,
+    ImageDataset("./data/celeba/%s" % opt.dataset_name, transforms_=transforms_, mode="val"),
     batch_size=12,
     shuffle=True,
     num_workers=1,
 )
+
 
 # Optimizers
 optimizer_G = torch.optim.Adam(generator.parameters(), lr=opt.lr, betas=(opt.b1, opt.b2))
