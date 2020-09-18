@@ -81,20 +81,24 @@ if cuda:
 generator.apply(weights_init_normal)
 discriminator.apply(weights_init_normal)
 
-# Dataset loader
+# Load Dataset
 transforms_ = [
     transforms.Resize((opt.img_size, opt.img_size), Image.BICUBIC),
     transforms.ToTensor(),
     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
 ]
+celeb_train_ds = CelebADataset("./data", download=True, transform=transforms_)
+celeb_test_ds = CelebADataset("./data", download=True, split='test', transform=transforms_)
+
+# Dataset loader
 dataloader = DataLoader(
-    ImageDataset("../../data/%s" % opt.dataset_name, transforms_=transforms_),
+    celeb_train_ds,
     batch_size=opt.batch_size,
     shuffle=True,
     num_workers=opt.n_cpu,
 )
 test_dataloader = DataLoader(
-    ImageDataset("../../data/%s" % opt.dataset_name, transforms_=transforms_, mode="val"),
+    celeb_test_ds,
     batch_size=12,
     shuffle=True,
     num_workers=1,
