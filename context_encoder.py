@@ -13,6 +13,7 @@ import argparse
 import os
 import numpy as np
 import math
+from pandas import DataFrame
 
 import torchvision.transforms as transforms
 from torchvision.utils import save_image
@@ -130,6 +131,16 @@ def save_sample(batches_done):
 #  Training
 # ----------
 
+# instantiate loss history lists
+loss_values = []
+loss_values_adv = []
+loss_values_pixel = []
+
+real_loss_values = []
+fake_loss_values = []
+d_loss_values = []
+
+
 for epoch in range(opt.n_epochs):
     for i, (imgs, masked_imgs, masked_parts) in enumerate(dataloader):
 
@@ -157,6 +168,20 @@ for epoch in range(opt.n_epochs):
         # Total loss
         g_loss = 0.001 * g_adv + 0.999 * g_pixel
 
+        # save losses of generator
+        if i % 100 == 0:
+          loss_values_adv.append(g_adv.item())
+          g_adv_loss = DataFrame(loss_values_adv, columns = ['g_adv'])
+          g_adv_loss.to_csv("g_adv_loss_values.csv", sep = ",", index = False)
+
+          loss_values_pixel.append(g_pixel.item())
+          g_pixel_loss = DataFrame(loss_values_adv, columns = ['g_pixel'])
+          g_pixel_loss.to_csv("g_pixel_loss_values.csv", sep = ",", index = False)
+
+          loss_values.append(g_loss.item())
+          g_loss_df = DataFrame(loss_values, columns = ['g_loss'])
+          g_loss_df.to_csv("g_loss_values.csv", sep = ",", index = False)
+
         g_loss.backward()
         optimizer_G.step()
 
@@ -170,6 +195,20 @@ for epoch in range(opt.n_epochs):
         real_loss = adversarial_loss(discriminator(masked_parts), valid)
         fake_loss = adversarial_loss(discriminator(gen_parts.detach()), fake)
         d_loss = 0.5 * (real_loss + fake_loss)
+
+        # save losses of discriminator
+        if i % 100 == 0:
+          real_loss_values.append(g_adv.item())
+          real_loss_values_df = DataFrame(real_loss_values, columns = ['real_loss'])
+          real_loss_values_df.to_csv("real_loss_values.csv", sep = ",", index = False)
+
+          fake_loss_values.append(g_pixel.item())
+          fake_loss_values_df = DataFrame(fake_loss_values, columns = ['fake_loss'])
+          fake_loss_values_df.to_csv("fake_loss_values.csv", sep = ",", index = False)
+
+          d_loss_values.append(d_loss.item())
+          d_loss_values_df = DataFrame(d_loss_values, columns = ['d_loss'])
+          d_loss_values_df.to_csv("d_loss_values.csv", sep = ",", index = False)
 
         d_loss.backward()
         optimizer_D.step()
@@ -185,3 +224,4 @@ for epoch in range(opt.n_epochs):
             save_sample(batches_done)
     torch.save(generator.state_dict(), "./weights/gw" + "%d" % epoch + ".pth")
     torch.save(discriminator.state_dict(), "./weights/dw" + "%d" % epoch + ".pth")
+
