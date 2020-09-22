@@ -175,7 +175,7 @@ for epoch in range(opt.n_epochs):
           g_adv_loss.to_csv("g_adv_loss_values.csv", sep = ",", index = False)
 
           loss_values_pixel.append(g_pixel.item())
-          g_pixel_loss = DataFrame(loss_values_adv, columns = ['g_pixel'])
+          g_pixel_loss = DataFrame(loss_values_pixel, columns = ['g_pixel'])
           g_pixel_loss.to_csv("g_pixel_loss_values.csv", sep = ",", index = False)
 
           loss_values.append(g_loss.item())
@@ -198,11 +198,11 @@ for epoch in range(opt.n_epochs):
 
         # save losses of discriminator
         if i % 100 == 0:
-          real_loss_values.append(g_adv.item())
+          real_loss_values.append(real_loss.item())
           real_loss_values_df = DataFrame(real_loss_values, columns = ['real_loss'])
           real_loss_values_df.to_csv("real_loss_values.csv", sep = ",", index = False)
 
-          fake_loss_values.append(g_pixel.item())
+          fake_loss_values.append(fake_loss.item())
           fake_loss_values_df = DataFrame(fake_loss_values, columns = ['fake_loss'])
           fake_loss_values_df.to_csv("fake_loss_values.csv", sep = ",", index = False)
 
